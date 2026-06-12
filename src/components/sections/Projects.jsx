@@ -43,18 +43,20 @@ const Projects = () => {
                 }`}
                 style={fadeInUp(inView, staggerDelay(index, 80, 120))}
               >
-                <div className="project-card__top">
-                  <span
-                    className="project-card__icon"
-                    style={{ color: project.color }}
-                  >
-                    {project.icon}
-                  </span>
+                <div className="project-card__header">
+                  <div className="project-card__title-wrap">
+                    <span
+                      className="project-card__icon"
+                      style={{ color: project.color }}
+                    >
+                      {project.icon}
+                    </span>
+
+                    <h3>{project.title}</h3>
+                  </div>
 
                   <span className="project-card__badge">{project.badge}</span>
                 </div>
-
-                <h3>{project.title}</h3>
 
                 <p className="project-card__subtitle">{project.subtitle}</p>
 
