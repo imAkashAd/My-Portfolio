@@ -1,0 +1,15 @@
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  background:
+    radial-gradient(circle at top, rgba(88, 166, 255, 0.12), transparent 35%),
+    linear-gradient(180deg, #0a0e1a 0%, #060910 100%);
+}
+
+::placeholder {
+  color: rgba(230, 237, 243, 0.35);
+}

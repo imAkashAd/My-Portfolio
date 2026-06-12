@@ -1,0 +1,144 @@
+.navbar {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 50;
+  padding: 1rem 0;
+  transition: background-color 200ms ease, border-color 200ms ease, backdrop-filter 200ms ease;
+}
+
+.navbar--scrolled {
+  background: rgba(10, 14, 26, 0.82);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(88, 166, 255, 0.12);
+}
+
+.navbar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.navbar__logo,
+.navbar__link,
+.navbar__drawer-link,
+.navbar__hamburger {
+  background: none;
+  color: var(--text-primary);
+}
+
+.navbar__logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.navbar__logo-name,
+.navbar__logo-bracket {
+  font-size: 1rem;
+}
+
+.navbar__logo-bracket {
+  color: var(--accent);
+}
+
+.navbar__links {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.navbar__link {
+  padding: 0.6rem 0.85rem;
+  border-radius: 999px;
+  color: var(--text-secondary);
+  transition: color 160ms ease, background-color 160ms ease;
+}
+
+.navbar__link:hover,
+.navbar__link--active {
+  color: var(--text-primary);
+  background: rgba(88, 166, 255, 0.08);
+}
+
+.navbar__cta {
+  flex-shrink: 0;
+}
+
+.navbar__hamburger {
+  display: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  flex-direction: column;
+}
+
+.navbar__hamburger span {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background: var(--text-primary);
+  border-radius: 999px;
+  transition: transform 180ms ease, opacity 180ms ease;
+}
+
+.navbar__hamburger--open span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.navbar__hamburger--open span:nth-child(2) {
+  opacity: 0;
+}
+
+.navbar__hamburger--open span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+.navbar__drawer {
+  display: none;
+  padding: 0 0 1rem;
+}
+
+.navbar__drawer--open {
+  display: block;
+}
+
+.navbar__drawer-links {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.navbar__drawer-link {
+  width: 100%;
+  text-align: left;
+  padding: 0.9rem 0;
+  color: var(--text-secondary);
+  border-bottom: 1px solid rgba(88, 166, 255, 0.08);
+}
+
+.navbar__drawer-link--active {
+  color: var(--text-primary);
+}
+
+.navbar__drawer-cta {
+  margin-top: 0.5rem;
+  width: fit-content;
+}
+
+@media (max-width: 900px) {
+  .navbar__links,
+  .navbar__cta {
+    display: none;
+  }
+
+  .navbar__hamburger {
+    display: inline-flex;
+  }
+}
