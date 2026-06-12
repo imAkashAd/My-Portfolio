@@ -106,8 +106,19 @@
   padding: 0 0 1rem;
 }
 
-.navbar__drawer--open {
-  display: block;
+.navbar__drawer {
+  display: none;
+  padding: 0 0 1rem;
+
+  background: rgba(10, 14, 26, 0.97);
+  backdrop-filter: blur(20px);
+
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+
+  border-bottom: 1px solid rgba(88, 166, 255, 0.12);
 }
 
 .navbar__drawer-links {
