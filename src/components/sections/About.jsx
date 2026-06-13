@@ -13,14 +13,19 @@ const About = () => {
         <div className="section-header">
           <span className="section-eyebrow">About</span>
           <h2 className="section-title">A focused Flutter developer building with care</h2>
-          <p className="section-subtitle">Clean UI, reliable state management, and close collaboration with design and backend teams.</p>
+          <p className="section-subtitle">
+            Clean UI, reliable state management, and close collaboration with design and backend teams.
+          </p>
         </div>
 
         <div className="about-grid">
           <article className="card about-card" style={fadeInLeft(inView)}>
             <h3>Summary</h3>
             <p>{personalInfo.bio}</p>
-            <p>I work mostly with Flutter and GetX, integrate APIs, and care a lot about shipping polished apps on time while keeping the codebase easy to maintain.</p>
+            <p>
+              I work mostly with Flutter and GetX, integrate APIs, and care a lot about shipping
+              polished apps on time while keeping the codebase easy to maintain.
+            </p>
             <div className="about-meta">
               <div>
                 <span className="about-meta__label">Location</span>
@@ -54,7 +59,11 @@ const About = () => {
               <h3>Certifications</h3>
               <div className="about-cert-list">
                 {certifications.map((cert, index) => (
-                  <div key={cert.id} className="about-cert-item" style={fadeInRight(inView, staggerDelay(index, 180, 90))}>
+                  <div
+                    key={cert.id}
+                    className="about-cert-item"
+                    style={fadeInRight(inView, staggerDelay(index, 180, 80))}
+                  >
                     <span className="about-cert-icon">{cert.icon}</span>
                     <div>
                       <h4>{cert.title}</h4>

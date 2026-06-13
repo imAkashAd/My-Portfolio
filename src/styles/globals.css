@@ -26,15 +26,19 @@
   --radius-md: 12px;
   --radius-lg: 20px;
   --radius-xl: 32px;
-  --transition-fast: 150ms ease;
-  --transition-base: 250ms ease;
-  --transition-slow: 400ms ease;
+
+  /* ── Transition tokens: cubic-bezier tuned for 120–144 Hz ── */
+  --transition-fast: 140ms cubic-bezier(0.25, 1, 0.5, 1);
+  --transition-base: 220ms cubic-bezier(0.25, 1, 0.5, 1);
+  --transition-slow: 380ms cubic-bezier(0.16, 1, 0.3, 1);
+
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
   --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.5);
   --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.6);
   --glow-accent: 0 0 30px rgba(88, 166, 255, 0.2);
 }
 
+/* ── Reset ─────────────────────────────────────────────────────────────────── */
 *,
 *::before,
 *::after {
@@ -43,10 +47,15 @@
   padding: 0;
 }
 
+/* ── HTML / Body ───────────────────────────────────────────────────────────── */
 html {
+  /* Native smooth scroll – browser handles momentum, works at any refresh rate */
   scroll-behavior: smooth;
   font-size: 16px;
   overflow-x: hidden;
+  /* Hint the browser that the whole page scrolls – allows scroll-linked
+     optimisations and avoids full-page repaints on scroll */
+  scroll-padding-top: 80px;
 }
 
 body {
@@ -56,30 +65,26 @@ body {
   background-color: var(--bg-primary);
   background-image:
     radial-gradient(circle at 18% 12%, rgba(105, 183, 255, 0.12), transparent 26%),
-    radial-gradient(circle at 82% 18%, rgba(199, 166, 255, 0.1), transparent 22%),
-    radial-gradient(circle at 50% 80%, rgba(74, 208, 138, 0.08), transparent 24%),
+    radial-gradient(circle at 82% 18%, rgba(199, 166, 255, 0.1),  transparent 22%),
+    radial-gradient(circle at 50% 80%, rgba(74, 208, 138, 0.08),  transparent 24%),
     linear-gradient(180deg, #060913 0%, #04060b 100%);
   color: var(--text-primary);
   line-height: 1.6;
-  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Promotes body to its own compositor layer – avoids background repaint
+     when cards animate */
+  transform: translateZ(0);
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+/* ── Typography ────────────────────────────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
   line-height: 1.2;
   color: var(--text-primary);
 }
 
-code,
-pre,
-.mono {
+code, pre, .mono {
   font-family: var(--font-mono);
 }
 
@@ -109,16 +114,20 @@ button {
   outline: none;
 }
 
+/* ── Layout ────────────────────────────────────────────────────────────────── */
 .container {
   width: 100%;
   max-width: var(--container);
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 0 1.25rem;
 }
 
 .section {
   padding: var(--section-py) 0;
   position: relative;
+  /* Isolate paint layers per section – cards animating inside one section
+     won't invalidate other sections */
+  contain: layout style;
 }
 
 .section-header {
@@ -164,26 +173,33 @@ button {
   margin: 1rem auto 0;
 }
 
+/* ── Card ──────────────────────────────────────────────────────────────────── */
 .card {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 1.75rem;
+  /* Only animate compositor-safe properties */
   transition:
     border-color var(--transition-base),
-    transform var(--transition-base),
-    box-shadow var(--transition-base),
-    background-color var(--transition-base);
+    transform    var(--transition-base),
+    box-shadow   var(--transition-base),
+    background-color var(--transition-slow);
   backdrop-filter: blur(18px);
+  /* Promote each card to its own layer ONLY while it could be hovered.
+     Using :hover selector avoids permanent layer cost on all cards. */
 }
 
 .card:hover {
   border-color: var(--border-hover);
-  transform: translateY(-6px);
+  /* translate3d keeps the move on the compositor thread */
+  transform: translate3d(0, -6px, 0);
   background: var(--bg-card-hover);
   box-shadow: 0 14px 45px rgba(0, 0, 0, 0.28), var(--glow-accent);
+  will-change: transform;
 }
 
+/* ── Buttons ───────────────────────────────────────────────────────────────── */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -194,7 +210,12 @@ button {
   font-weight: 600;
   font-family: var(--font-display);
   letter-spacing: 0.02em;
-  transition: all var(--transition-base);
+  transition:
+    transform     var(--transition-fast),
+    box-shadow    var(--transition-fast),
+    background    var(--transition-fast),
+    border-color  var(--transition-fast),
+    color         var(--transition-fast);
   cursor: pointer;
 }
 
@@ -208,7 +229,7 @@ button {
   background: #8bc5ff;
   border-color: #8bc5ff;
   color: var(--bg-primary);
-  transform: translateY(-2px);
+  transform: translate3d(0, -2px, 0);
   box-shadow: 0 4px 20px rgba(88, 166, 255, 0.4);
 }
 
@@ -221,9 +242,10 @@ button {
 .btn-outline:hover {
   background: var(--accent-dim);
   color: var(--text-primary);
-  transform: translateY(-2px);
+  transform: translate3d(0, -2px, 0);
 }
 
+/* ── Tech tag ──────────────────────────────────────────────────────────────── */
 .tech-tag {
   display: inline-flex;
   align-items: center;
@@ -237,28 +259,17 @@ button {
   font-weight: 500;
 }
 
+/* ── Float animation: translate3d keeps it on the compositor ──────────────── */
 @keyframes softFloat {
-  0%,
-  100% { transform: translateY(0px); }
-  50% { transform: translateY(-6px); }
+  0%, 100% { transform: translate3d(0, 0px, 0); }
+  50%       { transform: translate3d(0, -6px, 0); }
 }
 
-::-webkit-scrollbar {
-  width: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--bg-secondary);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--accent);
-}
+/* ── Scrollbar ─────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar       { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-secondary); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
 ::selection {
   background: var(--accent-glow);
@@ -271,30 +282,21 @@ button {
   border-radius: 3px;
 }
 
+/* ── Reduced motion ────────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-
-  html {
-    scroll-behavior: auto;
-  }
+  html { scroll-behavior: auto; }
 }
 
+/* ── Mobile tweaks ─────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
-  :root {
-    --section-py: 4rem;
-  }
+  :root { --section-py: 4rem; }
 
-  .container {
-    padding: 0 1rem;
-  }
+  .container { padding: 0 1rem; }
 
-  .card {
-    padding: 1.25rem;
-  }
+  .card { padding: 1.25rem; }
 }

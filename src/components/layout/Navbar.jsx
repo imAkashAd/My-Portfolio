@@ -1,30 +1,29 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { navLinks, personalInfo } from '../../data/portfolioData';
-import { useActiveSection } from '../../hooks/useScrollAnimation';
+import { useActiveSection, useScrollY } from '../../hooks/useScrollAnimation';
 import './Navbar.css';
 
 const Navbar = () => {
-  const [scrolled, setScrolled] = useState(false);
+  // useScrollY is rAF-throttled – no raw scroll listener here
+  const scrollY      = useScrollY();
+  const scrolled     = scrollY > 50;
   const [menuOpen, setMenuOpen] = useState(false);
-  const sectionIds = navLinks.map((link) => link.id);
+
+  const sectionIds    = navLinks.map((l) => l.id);
   const activeSection = useActiveSection(sectionIds);
 
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
-
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const scrollTo = (id) => {
+  // Stable callback – won't be recreated on every render
+  const scrollTo = useCallback((id) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     setMenuOpen(false);
-  };
+  }, []);
+
+  const toggleMenu = useCallback(() => setMenuOpen((v) => !v), []);
 
   return (
-    <nav className={`navbar ${scrolled ? 'navbar--scrolled' : ''}`}>
+    <nav className={`navbar${scrolled ? ' navbar--scrolled' : ''}`}>
       <div className="navbar__inner container">
+
         <button className="navbar__logo" onClick={() => scrollTo('hero')} aria-label="Back to top">
           <span className="navbar__logo-bracket">&lt;</span>
           <span className="navbar__logo-name">Akash</span>
@@ -35,7 +34,7 @@ const Navbar = () => {
           {navLinks.map((link) => (
             <li key={link.id}>
               <button
-                className={`navbar__link ${activeSection === link.id ? 'navbar__link--active' : ''}`}
+                className={`navbar__link${activeSection === link.id ? ' navbar__link--active' : ''}`}
                 onClick={() => scrollTo(link.id)}
               >
                 {link.label}
@@ -49,8 +48,8 @@ const Navbar = () => {
         </a>
 
         <button
-          className={`navbar__hamburger ${menuOpen ? 'navbar__hamburger--open' : ''}`}
-          onClick={() => setMenuOpen((value) => !value)}
+          className={`navbar__hamburger${menuOpen ? ' navbar__hamburger--open' : ''}`}
+          onClick={toggleMenu}
           aria-label="Toggle menu"
           aria-expanded={menuOpen}
         >
@@ -60,12 +59,13 @@ const Navbar = () => {
         </button>
       </div>
 
-      <div className={`navbar__drawer ${menuOpen ? 'navbar__drawer--open' : ''}`}>
+      {/* Drawer renders in DOM always; CSS handles show/hide via class */}
+      <div className={`navbar__drawer${menuOpen ? ' navbar__drawer--open' : ''}`}>
         <ul className="navbar__drawer-links container">
           {navLinks.map((link) => (
             <li key={link.id}>
               <button
-                className={`navbar__drawer-link ${activeSection === link.id ? 'navbar__drawer-link--active' : ''}`}
+                className={`navbar__drawer-link${activeSection === link.id ? ' navbar__drawer-link--active' : ''}`}
                 onClick={() => scrollTo(link.id)}
               >
                 {link.label}

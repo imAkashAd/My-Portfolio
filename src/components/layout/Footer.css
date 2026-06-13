@@ -18,9 +18,7 @@
   color: var(--text-secondary);
 }
 
-.footer__bracket {
-  color: var(--accent);
-}
+.footer__bracket { color: var(--accent); }
 
 .footer__copy {
   font-size: 0.8rem;
@@ -35,12 +33,11 @@
 .footer__links a {
   font-size: 0.8rem;
   color: var(--text-secondary);
+  /* color is compositor-safe (no layout, no paint) */
   transition: color var(--transition-fast);
 }
 
-.footer__links a:hover {
-  color: var(--accent);
-}
+.footer__links a:hover { color: var(--accent); }
 
 @media (max-width: 640px) {
   .footer__inner {

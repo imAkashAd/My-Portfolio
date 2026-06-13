@@ -4,18 +4,29 @@ import { useScrollAnimation } from '../../hooks/useScrollAnimation';
 import { fadeInLeft, fadeInRight } from '../../utils/animations';
 import './Section.css';
 
-const SkillBar = ({ skill }) => (
+// ─── SkillBar ─────────────────────────────────────────────────────────────────
+// Width is set via a CSS custom property so the browser can animate it
+// on the compositor thread (much smoother than JS-driven width changes).
+// The actual transition is declared in Section.css on .skill-bar__fill.
+const SkillBar = ({ skill, inView }) => (
   <div className="skill-bar">
     <div className="skill-bar__top">
       <span>{skill.name}</span>
       <span>{skill.level}%</span>
     </div>
     <div className="skill-bar__track">
-      <div className="skill-bar__fill" style={{ width: `${skill.level}%`, background: skill.color }} />
+      <div
+        className="skill-bar__fill"
+        style={{
+          '--skill-level': inView ? `${skill.level}%` : '0%',
+          background: skill.color,
+        }}
+      />
     </div>
   </div>
 );
 
+// ─── Skills ───────────────────────────────────────────────────────────────────
 const Skills = () => {
   const { ref, inView } = useScrollAnimation(0.15);
 
@@ -32,7 +43,7 @@ const Skills = () => {
             <h3>Primary</h3>
             <div className="skills-list">
               {skills.primary.map((skill) => (
-                <SkillBar key={skill.name} skill={skill} />
+                <SkillBar key={skill.name} skill={skill} inView={inView} />
               ))}
             </div>
           </article>
@@ -41,7 +52,7 @@ const Skills = () => {
             <h3>Secondary</h3>
             <div className="skills-list">
               {skills.secondary.map((skill) => (
-                <SkillBar key={skill.name} skill={skill} />
+                <SkillBar key={skill.name} skill={skill} inView={inView} />
               ))}
             </div>
           </article>

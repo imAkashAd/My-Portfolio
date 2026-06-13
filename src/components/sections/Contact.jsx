@@ -13,7 +13,10 @@ const Contact = () => {
         <div className="section-header">
           <span className="section-eyebrow">Contact</span>
           <h2 className="section-title">Let&apos;s build something useful</h2>
-          <p className="section-subtitle">I’m open to Flutter roles, freelance work, and collaborations with teams that care about quality.</p>
+          <p className="section-subtitle">
+            I&apos;m open to Flutter roles, freelance work, and collaborations with teams that care
+            about quality.
+          </p>
         </div>
 
         <div className="card contact-card" style={fadeInUp(inView)}>

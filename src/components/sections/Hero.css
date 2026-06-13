@@ -9,6 +9,7 @@
   padding: 7rem 0 4rem;
 }
 
+/* ── Ambient blobs: translate3d keeps them compositor-only ─────────────────── */
 .hero::before,
 .hero::after {
   content: '';
@@ -18,6 +19,8 @@
   border-radius: 50%;
   filter: blur(50px);
   opacity: 0.75;
+  /* Promote to own layer so blur doesn't repaint the hero background */
+  will-change: transform;
 }
 
 .hero::before {
@@ -26,7 +29,7 @@
   top: 12%;
   left: 8%;
   background: rgba(105, 183, 255, 0.14);
-  animation: driftOne 12s ease-in-out infinite;
+  animation: driftOne 12s cubic-bezier(0.45, 0, 0.55, 1) infinite;
 }
 
 .hero::after {
@@ -35,19 +38,20 @@
   bottom: 8%;
   right: 6%;
   background: rgba(199, 166, 255, 0.12);
-  animation: driftTwo 14s ease-in-out infinite;
+  animation: driftTwo 14s cubic-bezier(0.45, 0, 0.55, 1) infinite;
 }
 
 @keyframes driftOne {
   0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-  50% { transform: translate3d(24px, 18px, 0) scale(1.06); }
+  50%       { transform: translate3d(24px, 18px, 0) scale(1.06); }
 }
 
 @keyframes driftTwo {
   0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-  50% { transform: translate3d(-18px, -14px, 0) scale(1.08); }
+  50%       { transform: translate3d(-18px, -14px, 0) scale(1.08); }
 }
 
+/* ── Static glows – no animation, no will-change needed ────────────────────── */
 .hero__glow {
   position: absolute;
   border-radius: 50%;
@@ -72,6 +76,7 @@
   right: -50px;
 }
 
+/* ── Grid overlay: pure background-image, no paint cost ────────────────────── */
 .hero__grid,
 .hero__particles {
   position: absolute;
@@ -87,38 +92,52 @@
 }
 
 .hero__grid-horizontal {
-  background-image: repeating-linear-gradient(0deg, transparent, transparent 79px, rgba(88, 166, 255, 0.035) 79px, rgba(88, 166, 255, 0.035) 80px);
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 79px,
+    rgba(88, 166, 255, 0.035) 79px,
+    rgba(88, 166, 255, 0.035) 80px
+  );
 }
 
 .hero__grid-vertical {
-  background-image: repeating-linear-gradient(90deg, transparent, transparent 79px, rgba(88, 166, 255, 0.035) 79px, rgba(88, 166, 255, 0.035) 80px);
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 79px,
+    rgba(88, 166, 255, 0.035) 79px,
+    rgba(88, 166, 255, 0.035) 80px
+  );
 }
 
+/* ── Particles: translate3d + opacity only ──────────────────────────────────── */
 .hero__particle {
   position: absolute;
   background: var(--accent);
   border-radius: 50%;
+  will-change: transform, opacity;
   animation: floatParticle linear infinite;
 }
 
 @keyframes floatParticle {
-  0% { transform: translateY(0) scale(1); opacity: 0.4; }
-  50% { transform: translateY(-30px) scale(1.2); opacity: 0.7; }
-  100% { transform: translateY(0) scale(1); opacity: 0.4; }
+  0%   { transform: translate3d(0,  0px, 0) scale(1);   opacity: 0.4; }
+  50%  { transform: translate3d(0, -30px, 0) scale(1.2); opacity: 0.7; }
+  100% { transform: translate3d(0,  0px, 0) scale(1);   opacity: 0.4; }
 }
 
+/* ── Content grid ───────────────────────────────────────────────────────────── */
 .hero__content {
   width: 100%;
   display: grid;
-  /* grid-template-columns: 1fr; */
   grid-template-columns: 1fr auto;
   align-items: center;
   gap: 4rem;
-  /* gap: 2rem; */
   position: relative;
   z-index: 1;
 }
 
+/* ── Eyebrow ────────────────────────────────────────────────────────────────── */
 .hero__eyebrow {
   display: inline-flex;
   align-items: center;
@@ -136,15 +155,17 @@
   height: 8px;
   background: var(--accent-green);
   border-radius: 50%;
-  animation: pulse 2s ease infinite;
   flex-shrink: 0;
+  will-change: box-shadow;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 @keyframes pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(63, 185, 80, 0.4); }
-  50% { box-shadow: 0 0 0 8px rgba(63, 185, 80, 0); }
+  0%, 100% { box-shadow: 0 0 0 0   rgba(63, 185, 80, 0.4); }
+  50%       { box-shadow: 0 0 0 8px rgba(63, 185, 80, 0); }
 }
 
+/* ── Name / role ────────────────────────────────────────────────────────────── */
 .hero__name {
   font-size: clamp(2.5rem, 6vw, 4.5rem);
   font-weight: 800;
@@ -171,22 +192,20 @@
   font-family: var(--font-mono);
 }
 
-.typewriter {
-  color: #8ec5ff;
-}
+/* ── Typewriter cursor: opacity-only animation = zero paint ─────────────────── */
+.typewriter { color: #8ec5ff; }
 
 .cursor {
   display: inline-block;
   color: #8ec5ff;
   margin-left: 2px;
   opacity: 0;
-  transition: opacity 0.1s;
+  /* No transition needed – JS toggles the class each blink interval */
 }
 
-.cursor--visible {
-  opacity: 1;
-}
+.cursor--visible { opacity: 1; }
 
+/* ── Bio / CTAs ─────────────────────────────────────────────────────────────── */
 .hero__bio {
   font-size: 1rem;
   color: var(--text-secondary);
@@ -203,14 +222,8 @@
   margin-bottom: 1.5rem;
 }
 
-.hero__cta-main {
-  font-size: 0.9rem;
-  padding: 0.7rem 1.6rem;
-}
-
-.hero__icon-btn {
-  padding: 0.6rem 0.75rem;
-}
+.hero__cta-main  { font-size: 0.9rem; padding: 0.7rem 1.6rem; }
+.hero__icon-btn  { padding: 0.6rem 0.75rem; }
 
 .hero__location {
   display: inline-flex;
@@ -226,6 +239,7 @@
   flex-shrink: 0;
 }
 
+/* ── Visual column ──────────────────────────────────────────────────────────── */
 .hero__visual {
   display: flex;
   flex-direction: column;
@@ -233,20 +247,31 @@
   gap: 1.5rem;
 }
 
+/* ── Photo wrap: softFloat uses translate3d ─────────────────────────────────── */
 .hero__photo-wrap {
   position: relative;
   width: 280px;
   height: 280px;
   flex-shrink: 0;
-  animation: softFloat 7s ease-in-out infinite;
+  will-change: transform;
+  animation: softFloat 7s cubic-bezier(0.45, 0, 0.55, 1) infinite;
 }
 
+@keyframes softFloat {
+  0%, 100% { transform: translate3d(0, 0px, 0); }
+  50%       { transform: translate3d(0, -7px, 0); }
+}
+
+/* ── Rotating border: transform-only, GPU layer ──────────────────────────────── */
 .hero__photo-ring {
   position: absolute;
   inset: -8px;
   border-radius: 50%;
   border: 2px solid transparent;
-  background: linear-gradient(var(--bg-primary), var(--bg-primary)) padding-box, linear-gradient(135deg, var(--accent), var(--accent-purple), var(--accent-green), var(--accent)) border-box;
+  background:
+    linear-gradient(var(--bg-primary), var(--bg-primary)) padding-box,
+    linear-gradient(135deg, var(--accent), var(--accent-purple), var(--accent-green), var(--accent)) border-box;
+  will-change: transform;
   animation: rotateBorder 6s linear infinite;
 }
 
@@ -260,6 +285,7 @@
   border-radius: 50%;
   background: radial-gradient(circle, rgba(105, 183, 255, 0.28), transparent 70%);
   filter: blur(20px);
+  /* Static – no will-change needed */
 }
 
 .hero__photo {
@@ -293,6 +319,7 @@
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
 }
 
+/* ── Badge ──────────────────────────────────────────────────────────────────── */
 .hero__badge {
   position: absolute;
   bottom: -10px;
@@ -318,9 +345,7 @@
   pointer-events: none;
 }
 
-.hero__badge-icon {
-  font-size: 1.2rem;
-}
+.hero__badge-icon  { font-size: 1.2rem; }
 
 .hero__badge-title {
   display: block;
@@ -337,6 +362,7 @@
   font-family: var(--font-mono);
 }
 
+/* ── Stats ──────────────────────────────────────────────────────────────────── */
 .hero__stats {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -350,13 +376,18 @@
   border-radius: var(--radius-md);
   padding: 1rem;
   text-align: center;
-  transition: border-color var(--transition-base), transform var(--transition-base), background-color var(--transition-base);
+  /* Only transition compositor-safe properties */
+  transition:
+    border-color    var(--transition-base),
+    transform       var(--transition-base),
+    background-color var(--transition-slow);
 }
 
 .hero__stat:hover {
   border-color: var(--border-hover);
   background: var(--bg-card-hover);
-  transform: translateY(-3px);
+  transform: translate3d(0, -3px, 0);
+  will-change: transform;
 }
 
 .hero__stat-value {
@@ -378,6 +409,7 @@
   font-family: var(--font-mono);
 }
 
+/* ── Scroll indicator: translate3d bounce ───────────────────────────────────── */
 .hero__scroll-indicator {
   position: absolute;
   bottom: 2.5rem;
@@ -392,12 +424,11 @@
   cursor: pointer;
   z-index: 1;
   transition: color var(--transition-fast);
-  animation: bounce 2.5s ease infinite;
+  will-change: transform;
+  animation: bounce 2.5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
 }
 
-.hero__scroll-indicator:hover {
-  color: var(--accent);
-}
+.hero__scroll-indicator:hover { color: var(--accent); }
 
 .hero__scroll-text {
   font-size: 0.65rem;
@@ -406,15 +437,14 @@
   text-transform: uppercase;
 }
 
-.hero__scroll-arrow {
-  display: flex;
-}
+.hero__scroll-arrow { display: flex; }
 
 @keyframes bounce {
-  0%, 100% { transform: translateX(-50%) translateY(0); }
-  50% { transform: translateX(-50%) translateY(6px); }
+  0%, 100% { transform: translate3d(-50%, 0, 0); }
+  50%       { transform: translate3d(-50%, 6px, 0); }
 }
 
+/* ── Responsive ─────────────────────────────────────────────────────────────── */
 @media (max-width: 900px) {
   .hero__content {
     grid-template-columns: 1fr;
@@ -444,19 +474,12 @@
     margin-right: auto;
   }
 
-  .hero__ctas {
-    justify-content: center;
-  }
-
-  .hero__location {
-    justify-content: center;
-  }
+  .hero__ctas     { justify-content: center; }
+  .hero__location { justify-content: center; }
 }
 
 @media (max-width: 480px) {
-  .hero__stats {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  .hero__stats      { grid-template-columns: repeat(2, 1fr); }
 
   .hero__photo-wrap {
     width: 180px;
